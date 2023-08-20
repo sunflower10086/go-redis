@@ -35,17 +35,17 @@ func ListenAndServeWithSignal(
 	}
 	logger.Info("start listen")
 
-	LiistenAndServe(listener, handler, closeChan)
+	ListenAndServe(listener, handler, closeChan)
 	return nil
 }
 
-func LiistenAndServe(
+func ListenAndServe(
 	listener net.Listener,
 	handler tcp.Handler,
-	clooseChan <-chan struct{}) {
+	closeChan <-chan struct{}) {
 
 	go func() {
-		<-clooseChan
+		<-closeChan
 		logger.Info("shutting down")
 		_ = listener.Close()
 		_ = handler.Close()

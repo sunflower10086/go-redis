@@ -3,14 +3,14 @@ package reply
 type UnKnownErrReply struct {
 }
 
-var unknownErrBytes = []byte("-Err unknown\r\n")
+var UnknownErrBytes = []byte("-Err unknown\r\n")
 
 func (u *UnKnownErrReply) Error() string {
 	return "Err unknown"
 }
 
 func (u *UnKnownErrReply) ToBytes() []byte {
-	return unknownErrBytes
+	return UnknownErrBytes
 }
 
 type ArgNumErrReply struct {

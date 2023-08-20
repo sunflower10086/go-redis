@@ -36,6 +36,7 @@ func (r *readState) finished() bool {
 
 // ParseStream 异步进行解析指令，每个用户有一个解析器，会开启一个协程
 func ParseStream(reader io.Reader) <-chan *Payload {
+
 	// 异步进行解析，使得执行命令的同时还可以解析指令
 	ch := make(chan *Payload)
 	go parse0(reader, ch)
@@ -49,6 +50,7 @@ func parse0(reader io.Reader, ch chan<- *Payload) {
 		}
 	}()
 	bufReader := bufio.NewReader(reader)
+
 	var (
 		state readState
 		err   error
@@ -111,16 +113,16 @@ func parse0(reader io.Reader, ch chan<- *Payload) {
 					state = readState{}
 					continue
 				}
+			} else {
+				// 遇见+，-，:
+				result, err := parseSingleLineReply(msg)
+				ch <- &Payload{
+					Data:  result,
+					Error: err,
+				}
+				state = readState{}
+				continue
 			}
-
-			// 遇见+，-，:
-			result, err := parseSingleLineReply(msg)
-			ch <- &Payload{
-				Data:  result,
-				Error: err,
-			}
-			state = readState{}
-			continue
 		} else {
 			if err := readBody(msg, &state); err != nil {
 				ch <- &Payload{
@@ -155,6 +157,8 @@ func readLine(bufReader *bufio.Reader, state *readState) ([]byte, bool, error) {
 		msg []byte
 		err error
 	)
+	//bytes, _ := bufReader.ReadBytes('\n')
+	//logger.Info(string(bytes), err)
 	// 1.按照\r\n进行切分（有问题，传来的数据其中可能有\r\n）
 	if state.bulkLen == 0 {
 		msg, err = bufReader.ReadBytes('\n')

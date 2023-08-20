@@ -6,12 +6,13 @@ import (
 
 	"github.com/sunflower10086/go-redis/config"
 	"github.com/sunflower10086/go-redis/lib/logger"
+	"github.com/sunflower10086/go-redis/resp/handler"
 	"github.com/sunflower10086/go-redis/tcp"
 )
 
 const configFile string = "redis.conf"
 
-var defaultProoperties = &config.ServerProperties{
+var defaultProperties = &config.ServerProperties{
 	Bind: "0.0.0.0",
 	Port: 6379,
 }
@@ -32,12 +33,12 @@ func main() {
 	if fileExists(configFile) {
 		config.SetupConfig(configFile)
 	} else {
-		config.Properties = defaultProoperties
+		config.Properties = defaultProperties
 	}
 
 	err := tcp.ListenAndServeWithSignal(&tcp.Config{
 		Address: fmt.Sprintf("%s:%d", config.Properties.Bind, config.Properties.Port),
-	}, tcp.NewEchoHandler())
+	}, handler.NewRespHandler())
 
 	if err != nil {
 		panic(err)
