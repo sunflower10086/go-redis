@@ -4,10 +4,12 @@ import (
 	"bufio"
 	"errors"
 	"io"
+	"runtime/debug"
 	"strconv"
 	"strings"
 
 	"github.com/sunflower10086/go-redis/interface/resp"
+	"github.com/sunflower10086/go-redis/lib/logger"
 	"github.com/sunflower10086/go-redis/resp/reply"
 )
 
@@ -19,23 +21,20 @@ type Payload struct {
 
 // 解析器parser的状态
 type readState struct {
-	// 解析器正在解析单行数据还是多行数据
-	readingMultiLine bool
+	readingMultiLine bool // 解析器正在解析单行数据还是多行数据
 	// 正在读取的指令有几个参数
 	// eg： set key value 三个参数 expectedArgsCount=3
 	expectedArgsCount int
-	// 记录的消息的类型
-	msgType byte
-	// 用户传过来的具体的数据本身
-	args [][]byte
-	// 指令的长度
-	bulkLen int64
+	msgType           byte     // 记录的消息的类型
+	args              [][]byte // 用户传过来的具体的数据本身
+	bulkLen           int64    // 指令的长度
 }
 
 func (r *readState) finished() bool {
 	return r.expectedArgsCount > 0 && len(r.args) == r.expectedArgsCount
 }
 
+// ParseStream 异步进行解析指令，每个用户有一个解析器，会开启一个协程
 func ParseStream(reader io.Reader) <-chan *Payload {
 	// 异步进行解析，使得执行命令的同时还可以解析指令
 	ch := make(chan *Payload)
@@ -44,11 +43,113 @@ func ParseStream(reader io.Reader) <-chan *Payload {
 }
 
 func parse0(reader io.Reader, ch chan<- *Payload) {
+	defer func() {
+		if err := recover(); err != nil {
+			logger.Error(debug.Stack())
+		}
+	}()
+	bufReader := bufio.NewReader(reader)
+	var (
+		state readState
+		err   error
+		msg   []byte
+	)
 
+	for {
+		var ioErr bool
+		msg, ioErr, err = readLine(bufReader, &state)
+		if err != nil {
+			// 有ioErr，直接返回，结束
+			if ioErr {
+				ch <- &Payload{
+					Error: err,
+				}
+				close(ch)
+				return
+			}
+			ch <- &Payload{
+				Error: err,
+			}
+			state = readState{}
+			continue
+		}
+
+		// 是不是多行解析模式，这个数据是多行的，且这行数据是否正在被读
+		if !state.readingMultiLine {
+			// * 表示用户输入是一个数组
+			if msg[0] == '*' {
+				if err := parseMultiBulkHeader(msg, &state); err != nil {
+					ch <- &Payload{
+						Error: errors.New("protocol error: " + string(msg)),
+					}
+					state = readState{}
+					continue
+				}
+				if state.expectedArgsCount == 0 {
+					ch <- &Payload{
+						Data: reply.NewEmptyMultiBulkReply(),
+					}
+					state = readState{}
+					continue
+				}
+			}
+
+			// $ 表示用户输入是一个字符串
+			if msg[0] == '$' {
+				if err := parseBulkHeader(msg, &state); err != nil {
+					ch <- &Payload{
+						Error: errors.New("protocol error: " + string(msg)),
+					}
+					state = readState{}
+					continue
+				}
+				// 用户发来的是 $-1\r\n, 空指令
+				if state.bulkLen == -1 {
+					ch <- &Payload{
+						Data: reply.NewNullBulkReply(),
+					}
+					state = readState{}
+					continue
+				}
+			}
+
+			// 遇见+，-，:
+			result, err := parseSingleLineReply(msg)
+			ch <- &Payload{
+				Data:  result,
+				Error: err,
+			}
+			state = readState{}
+			continue
+		} else {
+			if err := readBody(msg, &state); err != nil {
+				ch <- &Payload{
+					Error: err,
+				}
+				state = readState{}
+				continue
+			}
+			// 判断这整条语句是否读取完成
+			if state.finished() {
+				var result resp.Reply
+				switch state.msgType {
+				case '*':
+					result = reply.NewMultiBulkReply(state.args)
+				case '$':
+					result = reply.NewBulkReply(state.args[0])
+				}
+				ch <- &Payload{
+					Data: result,
+				}
+				state = readState{}
+			}
+		}
+	}
 }
 
 // 读取一个指令
 // *3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n
+// 一行的一行读取
 func readLine(bufReader *bufio.Reader, state *readState) ([]byte, bool, error) {
 	var (
 		msg []byte
@@ -83,7 +184,7 @@ func readLine(bufReader *bufio.Reader, state *readState) ([]byte, bool, error) {
 	return msg, false, nil
 }
 
-// 读*3的内容，改变解析器的状态
+// 读*3\r\n的内容，改变解析器的状态
 func parseMultiBulkHeader(msg []byte, state *readState) error {
 	var (
 		err          error
