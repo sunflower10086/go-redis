@@ -3,11 +3,12 @@ package parser
 import (
 	"bufio"
 	"errors"
-	"github.com/sunflower10086/go-redis/interface/resp"
-	"github.com/sunflower10086/go-redis/resp/reply"
 	"io"
 	"strconv"
 	"strings"
+
+	"github.com/sunflower10086/go-redis/interface/resp"
+	"github.com/sunflower10086/go-redis/resp/reply"
 )
 
 // Payload 客户端给我们发来的数据(解析完的)
@@ -48,8 +49,7 @@ func parse0(reader io.Reader, ch chan<- *Payload) {
 
 // 读取一个指令
 // *3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n
-// 这个方法只知道$之后该怎么读，但是不知道*3之后怎么读
-func readLine(bufReader *bufio.Reader, state *readState) ([]byte, error) {
+func readLine(bufReader *bufio.Reader, state *readState) ([]byte, bool, error) {
 	var (
 		msg []byte
 		err error
@@ -59,14 +59,11 @@ func readLine(bufReader *bufio.Reader, state *readState) ([]byte, error) {
 		msg, err = bufReader.ReadBytes('\n')
 		// io错误
 		if err != nil {
-			if err == io.EOF {
-				return msg, nil
-			}
-			return nil, err
+			return nil, true, err
 		}
 		// 其他错误
 		if len(msg) == 0 || msg[len(msg)-2] != '\r' {
-			return nil, errors.New("protocol error: " + string(msg))
+			return nil, false, errors.New("protocol error: " + string(msg))
 		}
 	} else {
 		// 2.之前读到了$数字，严格按照字符个数读取
@@ -74,22 +71,19 @@ func readLine(bufReader *bufio.Reader, state *readState) ([]byte, error) {
 		msg = make([]byte, state.bulkLen+2)
 		_, err = io.ReadFull(bufReader, msg)
 		if err != nil {
-			if err == io.EOF {
-				return msg, nil
-			}
-			return nil, err
+			return nil, true, err
 		}
 
 		if len(msg) == 0 || msg[len(msg)-2] != '\r' || msg[len(msg)-1] != '\n' {
-			return nil, errors.New("protocol error: " + string(msg))
+			return nil, false, errors.New("protocol error: " + string(msg))
 		}
 		state.bulkLen = 0
 	}
 
-	return msg, nil
+	return msg, false, nil
 }
 
-// 读*3之后的内容，改变解析器的状态
+// 读*3的内容，改变解析器的状态
 func parseMultiBulkHeader(msg []byte, state *readState) error {
 	var (
 		err          error
@@ -114,7 +108,27 @@ func parseMultiBulkHeader(msg []byte, state *readState) error {
 	return errors.New("protocol error: " + string(msg))
 }
 
-// 客户端发送+OK -Err
+// $4\r\nPING\r\n
+func parseBulkHeader(msg []byte, state *readState) error {
+	var err error
+	state.bulkLen, err = strconv.ParseInt(string(msg[1:len(msg)-2]), 10, 64)
+	if err != nil {
+		return errors.New("protocol error: " + string(msg))
+	}
+	if state.bulkLen == -1 {
+		return nil
+	} else if state.bulkLen > 0 {
+		state.msgType = msg[0]
+		state.readingMultiLine = true
+		state.expectedArgsCount = 1
+		state.args = make([][]byte, 0, 1)
+		return nil
+	} else {
+		return errors.New("protocol error: " + string(msg))
+	}
+}
+
+// 客户端发送+OK -Err或者数字
 func parseSingleLineReply(msg []byte) (resp.Reply, error) {
 	str := strings.TrimSuffix(string(msg), "\r\n")
 	var result resp.Reply
@@ -131,4 +145,27 @@ func parseSingleLineReply(msg []byte) (resp.Reply, error) {
 		reply.NewIntReply(number)
 	}
 	return result, nil
+}
+
+// $3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n  读取之后的内容
+func readBody(msg []byte, state *readState) error {
+	// 去除最后面的\r\n
+	line := msg[:len(msg)-2]
+	var err error
+
+	// $3
+	if line[0] == '$' {
+		state.bulkLen, err = strconv.ParseInt(string(line[1:]), 10, 64)
+		if err != nil {
+			return errors.New("protocol error: " + string(msg))
+		}
+		if state.bulkLen <= 0 {
+			state.args = append(state.args, []byte{})
+			state.bulkLen = 0
+		}
+	} else {
+		state.args = append(state.args, line)
+	}
+
+	return nil
 }

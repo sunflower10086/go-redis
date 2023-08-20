@@ -43,10 +43,10 @@ func NewNullBulkReply() *NullBulkReply {
 // EmptyMultiBulkReply 一个空数组
 type EmptyMultiBulkReply struct{}
 
-var emptyMultibulkBytes = []byte("*0\r\n")
+var emptyMultiBulkBytes = []byte("*0\r\n")
 
 func (e *EmptyMultiBulkReply) ToBytes() []byte {
-	return emptyMultibulkBytes
+	return emptyMultiBulkBytes
 }
 
 func NewEmptyMultiBulkReply() *EmptyMultiBulkReply {

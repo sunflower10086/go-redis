@@ -1,3 +1,3 @@
 module github.com/sunflower10086/go-redis
 
-go 1.21.0
+go 1.20
