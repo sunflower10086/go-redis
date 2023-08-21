@@ -24,7 +24,7 @@ type RespHandler struct {
 
 func NewRespHandler() *RespHandler {
 	var db databasefase.Database
-	db = database.NewEchoDatabase()
+	db = database.NewDB()
 	//TODO: 实现database
 	return &RespHandler{
 		db: db,
