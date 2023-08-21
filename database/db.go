@@ -14,14 +14,6 @@ type DB struct {
 	data  dict.Dict
 }
 
-func (db *DB) Close() {
-
-}
-
-func (db *DB) AfterClientClose(connection resp.Connection) {
-
-}
-
 // ExecFunc 执行函数
 type ExecFunc func(db *DB, args [][]byte) resp.Reply
 

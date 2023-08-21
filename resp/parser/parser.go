@@ -94,10 +94,7 @@ func parse0(reader io.Reader, ch chan<- *Payload) {
 					state = readState{}
 					continue
 				}
-			}
-
-			// $ 表示用户输入是一个字符串
-			if msg[0] == '$' {
+			} else if msg[0] == '$' { // $ 表示用户输入是一个字符串
 				if err := parseBulkHeader(msg, &state); err != nil {
 					ch <- &Payload{
 						Error: errors.New("protocol error: " + string(msg)),
@@ -138,7 +135,7 @@ func parse0(reader io.Reader, ch chan<- *Payload) {
 				case '*':
 					result = reply.NewMultiBulkReply(state.args)
 				case '$':
-					result = reply.NewBulkReply(state.args[0])
+					result = reply.NewMultiBulkReply(state.args)
 				}
 				ch <- &Payload{
 					Data: result,
@@ -157,8 +154,7 @@ func readLine(bufReader *bufio.Reader, state *readState) ([]byte, bool, error) {
 		msg []byte
 		err error
 	)
-	//bytes, _ := bufReader.ReadBytes('\n')
-	//logger.Info(string(bytes), err)
+
 	// 1.按照\r\n进行切分（有问题，传来的数据其中可能有\r\n）
 	if state.bulkLen == 0 {
 		msg, err = bufReader.ReadBytes('\n')

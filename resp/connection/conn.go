@@ -51,7 +51,6 @@ func (c *Connection) GetDBIndex() int {
 	return c.selectDB
 }
 
-func (c *Connection) SelectDB(i int) {
-	//TODO implement me
-	panic("implement me")
+func (c *Connection) SelectDB(idx int) {
+	c.selectDB = idx
 }

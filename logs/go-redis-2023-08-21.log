@@ -1,0 +1,140 @@
+2023/08/21 15:41:20 [INFO][server.go:36] start listen
+2023/08/21 15:41:44 [INFO][server.go:71] accepted link
+2023/08/21 15:41:58 [INFO][server.go:49] shutting down
+2023/08/21 15:41:59 [INFO][server.go:36] start listen
+2023/08/21 15:42:03 [INFO][server.go:71] accepted link
+2023/08/21 15:42:06 [INFO][handler.go:57] connection close: 127.0.0.1:52268
+2023/08/21 15:42:08 [INFO][server.go:71] accepted link
+2023/08/21 15:43:57 [INFO][server.go:36] start listen
+2023/08/21 15:43:58 [INFO][server.go:71] accepted link
+2023/08/21 15:44:00 [INFO][handler.go:57] connection close: 127.0.0.1:52429
+2023/08/21 15:44:02 [INFO][server.go:71] accepted link
+2023/08/21 15:44:29 [INFO][server.go:36] start listen
+2023/08/21 15:44:47 [INFO][server.go:71] accepted link
+2023/08/21 15:44:47 [INFO][server.go:71] accepted link
+2023/08/21 15:44:47 [INFO][handler.go:57] connection close: 127.0.0.1:52476
+2023/08/21 15:44:51 [INFO][server.go:49] shutting down
+2023/08/21 15:44:52 [INFO][server.go:36] start listen
+2023/08/21 15:44:59 [INFO][server.go:71] accepted link
+2023/08/21 15:45:02 [INFO][server.go:49] shutting down
+2023/08/21 15:45:04 [INFO][server.go:36] start listen
+2023/08/21 15:46:03 [INFO][server.go:71] accepted link
+2023/08/21 15:46:55 [INFO][server.go:36] start listen
+2023/08/21 15:46:55 [INFO][server.go:71] accepted link
+2023/08/21 15:47:56 [INFO][handler.go:73] &{0xc000008138 <nil>}
+2023/08/21 15:47:56 [INFO][handler.go:73] &{0xc000266288 <nil>}
+2023/08/21 15:47:56 [INFO][handler.go:73] &{0xc0002662b8 <nil>}
+2023/08/21 15:47:56 [INFO][server.go:49] shutting down
+2023/08/21 15:47:58 [INFO][server.go:36] start listen
+2023/08/21 15:48:00 [INFO][server.go:71] accepted link
+2023/08/21 15:49:49 [INFO][handler.go:73] &{0xc0000083a8 <nil>}
+2023/08/21 15:49:49 [INFO][handler.go:73] &{0xc000382018 <nil>}
+2023/08/21 15:49:49 [INFO][handler.go:73] &{0xc000328018 <nil>}
+2023/08/21 15:49:52 [INFO][server.go:36] start listen
+2023/08/21 15:49:54 [INFO][server.go:71] accepted link
+2023/08/21 15:49:56 [INFO][server.go:36] start listen
+2023/08/21 15:49:58 [INFO][server.go:71] accepted link
+2023/08/21 15:50:00 [INFO][handler.go:73] &{[83 69 84]}
+2023/08/21 15:50:00 [INFO][handler.go:73] &{[107 101 121]}
+2023/08/21 15:50:00 [INFO][handler.go:73] &{[118 97 108 117 101]}
+2023/08/21 15:50:31 [INFO][server.go:36] start listen
+2023/08/21 15:50:33 [INFO][server.go:71] accepted link
+2023/08/21 15:50:34 [INFO][handler.go:73] $3
+SET
+
+2023/08/21 15:50:34 [INFO][handler.go:73] $3
+key
+
+2023/08/21 15:50:34 [INFO][handler.go:73] $5
+value
+
+2023/08/21 15:53:08 [INFO][server.go:36] start listen
+2023/08/21 15:53:28 [INFO][server.go:71] accepted link
+2023/08/21 15:53:29 [INFO][handler.go:73] $3
+SET
+
+2023/08/21 15:53:29 [INFO][handler.go:75] <nil> false
+2023/08/21 15:53:29 [INFO][handler.go:73] $3
+key
+
+2023/08/21 15:53:29 [INFO][handler.go:75] <nil> false
+2023/08/21 15:53:29 [INFO][handler.go:73] $5
+value
+
+2023/08/21 15:53:29 [INFO][handler.go:75] <nil> false
+2023/08/21 15:53:33 [INFO][server.go:36] start listen
+2023/08/21 15:54:23 [INFO][server.go:71] accepted link
+2023/08/21 15:54:23 [INFO][server.go:71] accepted link
+2023/08/21 15:54:23 [INFO][handler.go:57] connection close: 127.0.0.1:53406
+2023/08/21 15:54:23 [INFO][handler.go:73] $3
+SET
+
+2023/08/21 15:54:23 [INFO][handler.go:75] <nil> false
+2023/08/21 15:54:23 [INFO][handler.go:73] $3
+key
+
+2023/08/21 15:54:23 [INFO][handler.go:75] <nil> false
+2023/08/21 15:54:23 [INFO][handler.go:73] $5
+value
+
+2023/08/21 15:54:23 [INFO][handler.go:75] <nil> false
+2023/08/21 15:54:27 [INFO][server.go:36] start listen
+2023/08/21 15:54:48 [INFO][server.go:71] accepted link
+2023/08/21 15:54:48 [INFO][handler.go:57] connection close: 127.0.0.1:53486
+2023/08/21 15:54:50 [INFO][server.go:36] start listen
+2023/08/21 15:59:23 [INFO][server.go:71] accepted link
+2023/08/21 16:07:47 [INFO][handler.go:73] $3
+SET
+
+2023/08/21 16:07:47 [INFO][handler.go:75] <nil> false
+2023/08/21 16:07:47 [INFO][handler.go:73] $3
+key
+
+2023/08/21 16:07:47 [INFO][handler.go:75] <nil> false
+2023/08/21 16:07:47 [INFO][handler.go:73] $5
+value
+
+2023/08/21 16:07:47 [INFO][handler.go:75] <nil> false
+2023/08/21 16:07:49 [INFO][server.go:36] start listen
+2023/08/21 16:07:55 [INFO][server.go:36] start listen
+2023/08/21 16:07:57 [INFO][server.go:71] accepted link
+2023/08/21 16:08:00 [INFO][handler.go:57] connection close: 192.168.88.1:54541
+2023/08/21 16:08:01 [INFO][server.go:71] accepted link
+2023/08/21 16:08:03 [INFO][handler.go:73] *3
+$3
+SET
+$3
+key
+$5
+value
+
+2023/08/21 16:08:03 [INFO][handler.go:75] &{[[83 69 84] [107 101 121] [118 97 108 117 101]]} true
+2023/08/21 16:08:07 [INFO][handler.go:73] *3
+$3
+SET
+$3
+key
+$5
+value
+
+2023/08/21 16:08:07 [INFO][handler.go:75] &{[[83 69 84] [107 101 121] [118 97 108 117 101]]} true
+2023/08/21 16:15:42 [INFO][server.go:49] shutting down
+2023/08/21 16:20:58 [INFO][server.go:36] start listen
+2023/08/21 16:22:34 [INFO][server.go:71] accepted link
+2023/08/21 16:26:23 [INFO][server.go:49] shutting down
+2023/08/21 16:26:27 [INFO][server.go:36] start listen
+2023/08/21 16:26:28 [INFO][server.go:71] accepted link
+2023/08/21 16:26:48 [INFO][server.go:49] shutting down
+2023/08/21 16:26:49 [INFO][server.go:36] start listen
+2023/08/21 16:26:53 [INFO][server.go:71] accepted link
+2023/08/21 16:26:53 [INFO][handler.go:57] connection close: 192.168.88.1:56240
+2023/08/21 16:26:55 [INFO][server.go:71] accepted link
+2023/08/21 16:40:44 [INFO][server.go:36] start listen
+2023/08/21 16:40:47 [INFO][server.go:71] accepted link
+2023/08/21 16:44:59 [INFO][server.go:49] shutting down
+2023/08/21 16:45:02 [INFO][server.go:36] start listen
+2023/08/21 16:45:04 [INFO][server.go:71] accepted link
+2023/08/21 16:45:22 [INFO][server.go:49] shutting down
+2023/08/21 16:45:25 [INFO][server.go:36] start listen
+2023/08/21 16:45:27 [INFO][server.go:71] accepted link
+2023/08/21 16:46:09 [INFO][handler.go:57] connection close: 192.168.88.1:57973
